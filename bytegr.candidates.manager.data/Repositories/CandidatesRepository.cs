@@ -1,78 +1,144 @@
 ﻿using System;
+using bytegr.candidates.manager.data.DbContexts;
 using bytegr.candidates.manager.data.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace bytegr.candidates.manager.data.Repositories
 {
 	public class CandidatesRepository : ICandidatesRepository
     {
-		public CandidatesRepository()
-		{
-		}
+        private readonly AppDbContext _context;
 
-        public Task AddCandidateAsync(CandidateEntity candidate)
-        {
-            throw new NotImplementedException();
+        public CandidatesRepository(AppDbContext context) {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public Task AddDegreeAsync(int candidateId, DegreeEntity degree)
-        {
-            throw new NotImplementedException();
+        #region Add
+        //candidate
+        public async Task AddCandidateAsync(CandidateEntity candidate) {
+            await _context.Candidates.AddAsync(candidate);
+            await SaveChangesAsync();
         }
 
-        public Task AddDegreeToCandidateAsync(int candidateId, DegreeEntity degree)
+        public async Task AddCandidateDegreeAsync(int candidateId, DegreeEntity degree)
         {
-            throw new NotImplementedException();
+            if (await CandidateExistsAsync(candidateId)) {
+                var candidate = await GetCandidateAsync(candidateId);
+
+                if (candidate != null) {
+                    candidate.Degrees.Add(degree);
+                    await SaveChangesAsync();
+                }
+            }
+            else throw new NotImplementedException();
         }
 
-        public Task<bool> CandidateExistsAsync(int candidateId)
-        {
-            throw new NotImplementedException();
+        //degree
+        public async Task AddDegreeAsync(DegreeEntity degree) {
+            await _context.Degrees.AddAsync(degree);
+            await SaveChangesAsync();
+        }
+        #endregion
+
+        #region Get
+        //candidate
+        public async Task<CandidateEntity?> GetCandidateAsync(int candidateId) {
+            return await _context.Candidates.Include(d => d.Degrees).Where(c => c.Id == candidateId).FirstOrDefaultAsync();
         }
 
-        public Task<bool> CandidateHasDegreesAsync(int candidateId)
-        {
-            throw new NotImplementedException();
+        public async Task<IEnumerable<CandidateEntity>> GetCandidatesAsync(bool includeDegrees = true) {
+            if (includeDegrees) return await _context.Candidates.OrderBy(c => c.Id).Include(d => d.Degrees).ToListAsync();
+            else return await _context.Candidates.OrderBy(c => c.Id).ToListAsync();
         }
 
-        public Task DeleteCandidateAsync(int candidateId)
-        {
-            throw new NotImplementedException();
+        public async Task<IEnumerable<DegreeEntity>> GetCandidateDegreesAsync(int candidateId) {
+            return await _context.Degrees.Where(d => d.CandidateId == candidateId).ToListAsync();
         }
 
-        public Task DeleteDegreeAsync(int degreeId)
-        {
-            throw new NotImplementedException();
+        //degree
+        public async Task<DegreeEntity?> GetDegreeAsync(int degreeId) {
+            return await _context.Degrees.Where(d => d.Id == degreeId).FirstOrDefaultAsync();
         }
 
-        public Task<CandidateEntity?> GetCandidateAsync(int candidateId)
-        {
-            throw new NotImplementedException();
+        public async Task<IEnumerable<DegreeEntity>> GetDegreesAsync() {
+            return await _context.Degrees.OrderBy(d => d.Id).ToListAsync();
+        }
+        #endregion
+
+        #region Exist
+        //candidate
+        public async Task<bool> CandidateExistsAsync(int candidateId) {
+            return await _context.Candidates.AnyAsync(c => c.Id == candidateId);
         }
 
-        public Task<IEnumerable<DegreeEntity>> GetCandidateDegreesAsync(int candidateId)
-        {
-            throw new NotImplementedException();
+        public async Task<bool> CandidateHasAnyDegreeAsync(int candidateId) {
+            return await _context.Degrees.AnyAsync(c => c.CandidateId == candidateId);
         }
 
-        public Task<IEnumerable<CandidateEntity>> GetCandidatesAsync()
-        {
-            throw new NotImplementedException();
+        //degree
+        public async Task<bool> DegreeExistsAsync(int degreeId) {
+            return await _context.Degrees.AnyAsync(d => d.Id == degreeId);
+        }
+        #endregion
+
+        #region Update
+        //candidate
+        public async Task UpdateCandidateAsync(CandidateEntity candidate) {
+            var existing = await GetCandidateAsync(candidate.Id);
+
+            if (existing != null) {
+                _context.Entry(existing).CurrentValues.SetValues(candidate);
+                await SaveChangesAsync();
+            }
         }
 
-        public Task<IEnumerable<DegreeEntity>> GetDegreesAsync()
+        //degree
+        public async Task UpdateDegreeAsync(DegreeEntity degree) {
+            var existing = await GetDegreeAsync(degree.Id);
+
+            if (existing != null) {
+                _context.Entry(existing).CurrentValues.SetValues(degree);
+                await SaveChangesAsync();
+            }
+        }
+        #endregion
+
+        #region Delete
+        //candidate
+        public async Task DeleteCandidateAsync(int candidateId)
         {
-            throw new NotImplementedException();
+            if (await CandidateExistsAsync(candidateId)) {
+                var candidate = await GetCandidateAsync(candidateId);
+
+                if (await CandidateHasAnyDegreeAsync(candidateId)) {
+                    var degrees = GetCandidateDegreesAsync(candidateId);
+                    _context.Degrees.RemoveRange((IEnumerable<DegreeEntity>)degrees);
+                }
+
+                if (candidate != null) _context.Candidates.Remove(candidate);
+                await SaveChangesAsync();
+            }
+            else throw new NotImplementedException();
         }
 
-        public Task<bool> SaveChangesAsync()
+        //degree
+        public async Task DeleteDegreeAsync(int degreeId)
         {
-            throw new NotImplementedException();
+            if (await DegreeExistsAsync(degreeId))
+            {
+                var degree = await _context.Degrees.Where(d => d.Id == degreeId).FirstOrDefaultAsync();
+                if (degree != null) _context.Remove(degree);
+                await SaveChangesAsync();
+            }
+            else throw new NotImplementedException();
         }
+        #endregion
 
-        public Task UpdateCandidateAsync(CandidateEntity candidate)
-        {
-            throw new NotImplementedException();
+        #region Common
+        public async Task<bool> SaveChangesAsync() {
+            return (await _context.SaveChangesAsync() >= 0);
         }
+        #endregion
     }
 }
 

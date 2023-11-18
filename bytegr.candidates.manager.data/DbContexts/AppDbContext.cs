@@ -1,11 +1,17 @@
 ﻿using System;
+using bytegr.candidates.manager.data.Entities;
+using Microsoft.EntityFrameworkCore;
+
 namespace bytegr.candidates.manager.data.DbContexts
 {
-	public class AppDbContext
+	public class AppDbContext : DbContext
 	{
-		public AppDbContext()
-		{
-		}
-	}
+        public DbSet<CandidateEntity> Candidates { get; set; } = null!;
+        public DbSet<DegreeEntity> Degrees { get; set; } = null!;
+
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+            : base(options) {
+        }
+    }
 }
 
