@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Entities\" />
+    <None Remove="Dtos\" />
+    <None Remove="Repositories\" />
+    <None Remove="DbContexts\" />
+    <None Remove="DbSeeds\" />
+    <None Remove="Entities\Common\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Entities\" />
+    <Folder Include="Dtos\" />
+    <Folder Include="Repositories\" />
+    <Folder Include="DbContexts\" />
+    <Folder Include="DbSeeds\" />
+    <Folder Include="Entities\Common\" />
+  </ItemGroup>
+</Project>

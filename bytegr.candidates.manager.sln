@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 25.0.1706.4
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bytegr.candidates.manager.data", "bytegr.candidates.manager.data\bytegr.candidates.manager.data.csproj", "{097BFCF6-E880-466B-A92F-64833B6DBAC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bytegr.candidates.manager.web", "bytegr.candidates.manager.web\bytegr.candidates.manager.web.csproj", "{D8FD18C4-FC34-4F78-8A60-3FA64DC2F0C0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{68B42A83-A1CC-4558-B025-4A91D9964F4F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{09568230-68CB-4E24-BC94-385EE8363693}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{097BFCF6-E880-466B-A92F-64833B6DBAC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{097BFCF6-E880-466B-A92F-64833B6DBAC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{097BFCF6-E880-466B-A92F-64833B6DBAC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{097BFCF6-E880-466B-A92F-64833B6DBAC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8FD18C4-FC34-4F78-8A60-3FA64DC2F0C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8FD18C4-FC34-4F78-8A60-3FA64DC2F0C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8FD18C4-FC34-4F78-8A60-3FA64DC2F0C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8FD18C4-FC34-4F78-8A60-3FA64DC2F0C0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {061C2303-2C7E-4B9A-9824-5608D3A12C9F}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{097BFCF6-E880-466B-A92F-64833B6DBAC5} = {68B42A83-A1CC-4558-B025-4A91D9964F4F}
+		{D8FD18C4-FC34-4F78-8A60-3FA64DC2F0C0} = {68B42A83-A1CC-4558-B025-4A91D9964F4F}
+	EndGlobalSection
+EndGlobal
