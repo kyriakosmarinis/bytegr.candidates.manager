@@ -1,0 +1,100 @@
+﻿@model bytegr.candidates.manager.data.Dtos.CandidateDto
+@using Microsoft.AspNetCore.Http.Extensions
+
+<h1 style="font-weight:bolder;font-size:68px">Add</h1>
+<p style="margin-top:0px; margin-left:10px;margin-bottom:20px;font-size:x-small">@Context.Request.GetDisplayUrl()</p>
+
+<form method="post" asp-action="Add" asp-controller="Degree" asp-route-candidateDto="@Model"
+      enctype="multipart/form-data" style="margin-top:20px">
+
+    <!-- Id -->
+    <div class="row form-group" style="padding:3px">
+        <div class="col-md-2">
+            <label asp-for="Id" style="font-size:larger;font-weight:bolder"></label>
+        </div>
+        <div class="col-md-3">
+            <input asp-for="Id" type="number" class="form-control" readonly />
+        </div>
+    </div>
+
+    <!-- Degrees -->
+    <div class="row form-group" style="padding:3px">
+        <div class="col-md-2">
+            <label asp-for="Degrees" style="font-size:larger;font-weight:bolder"></label>
+        </div>
+        <div class="col-md-3">
+            <select id="selector-cv" asp-for="SelectedDegreeId" class="form-control">
+                @*<option selected>CV list</option>*@
+                @foreach (var degree in Model.Degrees)
+                {
+                    <option value="@degree.Id">@degree.Name</option>
+                    @*<span class="badge badge-primary">Primary</span>*@
+                }
+            </select>
+        </div>
+        <div class="col-md-4">
+            <span></span>
+        </div>
+    </div>
+
+
+
+    @*<div method="post" asp-action="Delete" asp-controller="YourController">
+        <select id="selector-cv" asp-for="SelectedDegreeId" class="form-control">
+            @foreach (var degree in Model.Degrees)
+            {
+                <option value="@degree.Id">@degree.Name</option>
+            }
+        </select>
+
+        
+    </div>*@
+
+
+
+    <!-- New Degree -->
+    <div class="row form-group" style="padding:3px">
+        <div class="col-md-2">
+            <label asp-for="Degrees" style="font-size:larger;font-weight:bolder">Insert degree</label>
+        </div>
+        <div class="col-md-3">
+            <input id="degree-new" type="text" name="degreeName" class="form-control" placeholder="New degree" />
+        </div>
+        <div class="col-md-4">
+            <span class="text-danger"></span>
+        </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="row form-group" style="padding:3px">
+        <div class="col-md-2 col-md-offset-2">
+            <label></label>
+        </div>
+        <div class="col-md-6">
+            <button type="submit" asp-action="Add" asp-controller="Candidate" asp-route-candidateDto="@Model" class="btn btn-primary">Submit</button>
+            <button type="submit" asp-action="Add" asp-controller="Degree" asp-route-candidate-degreeName="degreeName" asp-route-candidateDto="@Model.Id" class="btn btn-success">Insert</button>
+            <button type="submit" asp-action="Delete" asp-controller="Degree" asp-route-candidateDto="@Model.Id" class="btn btn-danger">Delete</button>
+            <button type="submit" asp-controller="Degree" asp-action="Delete" class="btn btn-danger">Delete</button>
+        </div>
+        @*<div class="col-md-4">
+                  <span class="text-danger"></span>
+            </div>*@
+    </div>
+
+    <!-- todo::with shared layout-->
+    <div class="col-md-2">
+        <input type="text" class="form-control" asp-for="LastName" hidden />
+    </div>
+    <div class="col-md-2">
+        <input type="text" class="form-control" asp-for="FirstName" hidden />
+    </div>
+    <div class="col-md-2">
+        <input type="email" class="form-control" asp-for="Email" hidden />
+    </div>
+    <div class="col-md-2">
+        <input type="tel" class="form-control" asp-for="Mobile" hidden />
+    </div>
+    <div class="col-md-2">
+        <input type="file" class="form-control" asp-for="CvFile" />
+    </div>
+</form>

@@ -1,0 +1,141 @@
+﻿@*
+*@
+@{
+    bool edit = true; string action = string.Empty;
+}
+@model bytegr.candidates.manager.data.Dtos.CandidateDto
+@using Microsoft.AspNetCore.Http.Extensions
+
+@if (Model.LastName.Length > 0)
+{
+    
+}
+else
+{
+    
+}
+<p style="margin-top:-15px; margin-left:1px;margin-bottom:40px;font-size:small">@Context.Request.GetDisplayUrl()</p>
+<form method="post" asp-action="Add" asp-controller="Candidate" asp-route-candidateDto="@Model" enctype="multipart/form-data" style="margin-top:20px">
+<!-- Id -->
+<div class="row form-group" style="padding:3px">
+    <div class="col-md-2">
+        <label asp-for="Id" style="font-size:larger;font-weight:bolder"></label>
+    </div>
+    <div class="col-md-3">
+        <input asp-for="Id" type="number" class="form-control" readonly />
+    </div>
+</div>
+
+<!-- Last Name -->
+<div class="row form-group" style="padding:3px">
+    <div class="col-md-2">
+        <label asp-for="LastName" style="font-size:larger;font-weight: bolder"></label>
+    </div>
+    <div class="col-md-3">
+        <input id="last-name-input" type="text" asp-for="LastName" class="form-control" placeholder="Last Name" required />
+    </div>
+    <div class="col-md-4">
+        <span asp-validation-for="LastName" class="text-danger"></span>
+    </div>
+</div>
+
+<!-- First Name -->
+<div class="row form-group" style="padding:3px">
+    <div class="col-md-2">
+        <label asp-for="FirstName" style="font-size:larger;font-weight:bolder"></label>
+    </div>
+    <div class="col-md-3">
+        <input id="first-name-is-valid" type="text" asp-for="FirstName" class="form-control" placeholder="First Name" required />
+    </div>
+    <div class="col-md-4">
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+    </div>
+</div>
+
+<!-- Email -->
+<div class="row form-group" style="padding:3px">
+    <div class="col-md-2">
+        <label asp-for="Email" style="font-size:larger;font-weight:bolder"></label>
+    </div>
+    <div class="col-md-3">
+        @if (!edit)
+        {
+            <input id="email-is-valid" type="email" asp-for="Email" class="form-control" placeholder="Email Name" required />
+        }
+        else
+        {
+            <input value="email@mail.com" id="email-is-valid" type="email" asp-for="Email" class="form-control" placeholder="Email Name" />
+        }
+    </div>
+    <div class="col-md-4">
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+</div>
+
+<!-- Mobile -->
+<div class="row form-group" style="padding:3px">
+    <div class="col-md-2">
+        <label asp-for="Mobile" style="font-size:larger;font-weight: bolder"></label>
+    </div>
+    <div class="col-md-3">
+        @if (!edit)
+        {
+            <input id="tel-mobile" type="tel" asp-for="Mobile" class="form-control" placeholder="Mobile" />
+        }
+        else
+        {
+            <input value="698547854" id="tel-mobile" type="tel" asp-for="Mobile" class="form-control" placeholder="Mobile" />
+        }
+    </div>
+    <div class="col-md-4">
+        <span asp-validation-for="Mobile" class="text-danger"></span>
+    </div>
+</div>
+
+<!-- Degrees -->
+<div class="row form-group" style="padding:3px">
+    <div class="col-md-2">
+        <div class="row">
+            <button type="submit" asp-action="Add" asp-controller="Degree" asp-route-candidate-degreeName="" asp-route-candidateDto="@Model" class="btn btn-link">Add </button>
+            <label asp-for="Degrees" style="font-weight:bolder;font-size:larger"></label>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <select id="selector-cv" asp-for="SelectedDegreeId" class="form-control">
+            @*<option selected>Choose...</option>*@
+            @foreach (var degree in Model.Degrees)
+            {
+                <option value="@degree.Id">@degree.Name</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-4">
+        
+    </div>
+</div>
+
+<!-- File -->
+<div class="row form-group" style="padding:3px">
+    <div class="col-md-2">
+        <label asp-for="CvFile" style="font-weight:bolder;font-size:larger"></label>
+    </div>
+    <div class="col-md-3">
+        <input id="file-cv-upload" type="file" asp-for="CvFile" class="btn btn-link">
+    </div>
+    <div class="col-md-4">
+    </div>
+</div>
+
+<!-- Buttons -->
+<div class="row form-group" style="padding:3px;margin-top:30px;margin-left:30px">
+    <div class="col-md-2">
+    </div>
+    <div class="col-md-3">
+        <button type="submit" asp-action="Insert" asp-controller="Candidate" asp-route-candidateDto="@Model" class="btn btn-outline-primary btn-lg btn-block">Submit</button>
+        <a asp-action="index" asp-controller="Home" class="btn btn-outline-secondary btn-lg btn-block">Dismiss</a>
+    </div>
+
+</div>
+
+
+</form>

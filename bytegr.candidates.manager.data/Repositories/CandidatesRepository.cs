@@ -15,35 +15,29 @@ namespace bytegr.candidates.manager.data.Repositories
 
         #region Add
         //candidate
-        public async Task AddCandidateAsync(CandidateEntity candidate) {
+        public async Task InsertCandidateAsync(CandidateEntity candidate) {
             await _context.Candidates.AddAsync(candidate);
-            await SaveChangesAsync();
+            await SaveDbContextChangesAsync();
         }
 
-        public async Task AddCandidateDegreeAsync(int candidateId, DegreeEntity degree)
-        {
-            if (await CandidateExistsAsync(candidateId)) {
-                var candidate = await GetCandidateAsync(candidateId);
-
-                if (candidate != null) {
-                    candidate.Degrees.Add(degree);
-                    await SaveChangesAsync();
-                }
-            }
-            else throw new NotImplementedException();
+        public async Task InsertCandidateDegreeAsync(DegreeEntity degree) {
+            await _context.Degrees.AddAsync(degree);
+            await SaveDbContextChangesAsync();
         }
 
         //degree
-        public async Task AddDegreeAsync(DegreeEntity degree) {
+        public async Task InsertDegreeAsync(DegreeEntity degree) {
             await _context.Degrees.AddAsync(degree);
-            await SaveChangesAsync();
+            await SaveDbContextChangesAsync();
         }
         #endregion
 
         #region Get
         //candidate
-        public async Task<CandidateEntity?> GetCandidateAsync(int candidateId) {
-            return await _context.Candidates.Include(d => d.Degrees).Where(c => c.Id == candidateId).FirstOrDefaultAsync();
+        public async Task<CandidateEntity?> GetCandidateAsync(int candidateId, bool includeDegrees = true) {
+            if (!await ExistsCandidateAsync(candidateId)) return new();//todo remove
+            if (includeDegrees) return await _context.Candidates.Include(d => d.Degrees).Where(c => c.Id == candidateId).FirstOrDefaultAsync();
+            else return await _context.Candidates.Where(c => c.Id == candidateId).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<CandidateEntity>> GetCandidatesAsync(bool includeDegrees = true) {
@@ -63,20 +57,45 @@ namespace bytegr.candidates.manager.data.Repositories
         public async Task<IEnumerable<DegreeEntity>> GetDegreesAsync() {
             return await _context.Degrees.OrderBy(d => d.Id).ToListAsync();
         }
+
+        public int GetId() {
+            return _context.GetId();
+        }
         #endregion
 
         #region Exist
         //candidate
-        public async Task<bool> CandidateExistsAsync(int candidateId) {
+        public async Task<bool> ExistsCandidateAsync(int candidateId) {
             return await _context.Candidates.AnyAsync(c => c.Id == candidateId);
         }
 
-        public async Task<bool> CandidateHasAnyDegreeAsync(int candidateId) {
+        public async Task<bool> ExistsCandidateDegreeAsync(int candidateId) {
             return await _context.Degrees.AnyAsync(c => c.CandidateId == candidateId);
         }
 
+        public async Task<bool> ExistsCandidateCvAsync(int candidateId) {
+            return await _context.Candidates
+                .Where(c => c.Id == candidateId)
+                .Select(b => b.CvBlob != null && b.CvBlob.Length > 0)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> HasCandidateCvChanged(int candidateId, byte[] bytes) {
+            if (bytes == null) return false;
+            return !await _context.Candidates
+                .Where(c => c.Id == candidateId && c.CvBlob.SequenceEqual(bytes))
+                .AnyAsync();
+        }
+
+        public async Task<bool> AreCandidateEntitiesEqual(int candidateId, CandidateEntity newEntity) {
+            var existingEntity = await GetCandidateAsync(candidateId);
+
+            if (ReferenceEquals(existingEntity, newEntity)) return true;
+            else return false;
+        }
+
         //degree
-        public async Task<bool> DegreeExistsAsync(int degreeId) {
+        public async Task<bool> ExistsDegreeAsync(int degreeId) {
             return await _context.Degrees.AnyAsync(d => d.Id == degreeId);
         }
         #endregion
@@ -88,7 +107,7 @@ namespace bytegr.candidates.manager.data.Repositories
 
             if (existing != null) {
                 _context.Entry(existing).CurrentValues.SetValues(candidate);
-                await SaveChangesAsync();
+                await SaveDbContextChangesAsync();
             }
         }
 
@@ -98,44 +117,43 @@ namespace bytegr.candidates.manager.data.Repositories
 
             if (existing != null) {
                 _context.Entry(existing).CurrentValues.SetValues(degree);
-                await SaveChangesAsync();
+                await SaveDbContextChangesAsync();
             }
         }
         #endregion
 
         #region Delete
         //candidate
-        public async Task DeleteCandidateAsync(int candidateId)
+        public async Task RemoveCandidateAsync(int candidateId)
         {
-            if (await CandidateExistsAsync(candidateId)) {
+            if (await ExistsCandidateAsync(candidateId)) {
                 var candidate = await GetCandidateAsync(candidateId);
 
-                if (await CandidateHasAnyDegreeAsync(candidateId)) {
-                    var degrees = GetCandidateDegreesAsync(candidateId);
-                    _context.Degrees.RemoveRange((IEnumerable<DegreeEntity>)degrees);
-                }
+                //if (await CandidateHasAnyDegreeAsync(candidateId)) {
+                //    var degrees = GetCandidateDegreesAsync(candidateId);
+                //    _context.Degrees.RemoveRange(degrees);
+                //}
 
                 if (candidate != null) _context.Candidates.Remove(candidate);
-                await SaveChangesAsync();
+                await SaveDbContextChangesAsync();
             }
             else throw new NotImplementedException();
         }
 
         //degree
-        public async Task DeleteDegreeAsync(int degreeId)
+        public async Task<bool> RemoveDegreeAsync(int degreeId)
         {
-            if (await DegreeExistsAsync(degreeId))
-            {
+            if (await ExistsDegreeAsync(degreeId)) {
                 var degree = await _context.Degrees.Where(d => d.Id == degreeId).FirstOrDefaultAsync();
                 if (degree != null) _context.Remove(degree);
-                await SaveChangesAsync();
+                return await SaveDbContextChangesAsync();
             }
             else throw new NotImplementedException();
         }
         #endregion
 
         #region Common
-        public async Task<bool> SaveChangesAsync() {
+        public async Task<bool> SaveDbContextChangesAsync() {
             return (await _context.SaveChangesAsync() >= 0);
         }
         #endregion

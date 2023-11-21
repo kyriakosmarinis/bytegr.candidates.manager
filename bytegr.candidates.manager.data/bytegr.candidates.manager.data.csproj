@@ -13,6 +13,8 @@
     <None Remove="DbContexts\" />
     <None Remove="DbSeeds\" />
     <None Remove="Entities\Common\" />
+    <None Remove="Common\" />
+    <None Remove="Common\Extensions\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Entities\" />
@@ -21,9 +23,13 @@
     <Folder Include="DbContexts\" />
     <Folder Include="DbSeeds\" />
     <Folder Include="Entities\Common\" />
+    <Folder Include="Common\" />
+    <Folder Include="Common\Extensions\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0" />
   </ItemGroup>
 </Project>

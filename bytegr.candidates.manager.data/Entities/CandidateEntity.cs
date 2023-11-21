@@ -30,7 +30,7 @@ namespace bytegr.candidates.manager.data.Entities
         public ICollection<DegreeEntity> Degrees { get; set; } = new List<DegreeEntity>();
 
         [Column(TypeName = "varbinary(MAX)")]
-        public byte[] CvBlob { get; set; } = new byte[] { };
+        public byte[] CvBlob { get; set; } = Array.Empty<byte>();
 
         //public Candidate(string lastname, string firstname, string email)
         //{
@@ -38,7 +38,6 @@ namespace bytegr.candidates.manager.data.Entities
         //    FirstName = firstname;
         //    Email = email;
         //}
-
     }
 }
 
