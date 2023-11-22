@@ -13,6 +13,7 @@
 
 <!-- Form -->
 <form method="post" id="form" asp-action="Add" asp-controller="Candidate" asp-route-candidateDto="@Model" enctype="multipart/form-data" style="margin-top:20px">
+    <!-- #region mandatory fields -->
     <!-- Id -->
     <div class="row form-group" style="padding:3px">
         <div class="col-md-2">
@@ -48,7 +49,7 @@
             <span asp-validation-for="FirstName" class="text-danger"></span>
         </div>
     </div>
-
+    <!-- #endregion mandatory fields -->
     <!-- Email -->
     <div class="row form-group" style="padding:3px">
         <div class="col-md-2">
@@ -99,35 +100,24 @@
         </div>
     </div>
 
-
-    <!-- ////////////////////////////////////////////////////////////////////////////////////////////// -->
     <!-- File -->
     <div class="row form-group" style="padding:3px">
         <div class="col-md-2">
             <label asp-for="CvFile" style="font-weight:bolder;font-size:larger"></label>
         </div>
         <div class="col-md-4">
-            <input id="file-cv-upload" type="file" asp-for="CvFile" accept=".pdf, .doc, .docx" class="form-control">
-        </div>
-        <div class="col-md-4">
-        </div>
-    </div>
-
-    <!-- File -->
-    <div class="row form-group">
-        <div class="col-md-2 col-md-offset-2">
-            <label asp-for="CvFile"></label>
-        </div>
-        <div class="col-md-2">
-            <input asp-for="CvFile" type="file" accept=".pdf, .doc, .docx" />
+            <input id="file-cv-upload" type="file" asp-for="CvFile" name="formFile" accept=".pdf, .doc, .docx" class="form-control" style="margin-bottom:5px">
+            <button type="submit"
+                    asp-action="UploadFile"
+                    asp-controller="Candidate"
+                    class="btn btn-outline-primary btn-sm">
+                Upload
+            </button>
         </div>
         <div class="col-md-4">
             <span asp-validation-for="CvFile" class="text-danger"></span>
         </div>
     </div>
-    <!-- ////////////////////////////////////////////////////////////////////////////////////////////// -->
-
-
 
     <!-- Date Created -->
     <div class="row form-group" style="padding:3px">

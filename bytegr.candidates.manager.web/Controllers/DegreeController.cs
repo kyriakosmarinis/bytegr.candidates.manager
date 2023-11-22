@@ -21,6 +21,7 @@ namespace bytegr.candidates.manager.web.Controllers
             _candidatesRepository = candidatesRepository ?? throw new ArgumentNullException(nameof(candidatesRepository));
         }
 
+        #region Index
         [HttpGet]
         public async Task<IActionResult> Index(bool isEditMode) {
             ViewData["Title"] = "Degrees";
@@ -28,7 +29,9 @@ namespace bytegr.candidates.manager.web.Controllers
             var degreesEntities = await _candidatesRepository.GetDegreesAsync();
             return View(_mapper.Map<IEnumerable<DegreeDto>>(degreesEntities));
         }
+        #endregion
 
+        #region Add
         [HttpPost]
         public async Task<IActionResult> Add(string? degreeName, bool isEditMode, bool isInsertMode, [FromForm] CandidateDto candidateDto) {
             ViewData["Title"] = "Add degrees";
@@ -50,6 +53,7 @@ namespace bytegr.candidates.manager.web.Controllers
             }
             return View();
         }
+        #endregion
 
         #region Delete
         //todo::fix bug - better implementation

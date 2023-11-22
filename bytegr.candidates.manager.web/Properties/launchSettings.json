@@ -11,7 +11,7 @@
     "bytegr.candidates.manager.web": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:7019;http://localhost:5091",
+      "applicationUrl": "https://localhost:7020;http://localhost:5092",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

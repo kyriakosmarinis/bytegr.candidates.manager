@@ -26,5 +26,9 @@
     <Folder Include="Views\Candidate\" />
     <Folder Include="Views\Degree\" />
     <Folder Include="Services\" />
+    <Folder Include="wwwroot\uploads\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="wwwroot\uploads\" />
   </ItemGroup>
 </Project>

@@ -19,17 +19,21 @@ namespace bytegr.candidates.manager.web.Controllers
         private readonly IMapper _mapper;
         private readonly ICandidatesRepository _candidatesRepository;
 
+        #region ctor
         public CandidateController(IMapper mapper, ICandidatesRepository candidatesRepository) {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _candidatesRepository = candidatesRepository ?? throw new ArgumentNullException(nameof(candidatesRepository));
         }
+        #endregion
 
+        #region Index
         public async Task<IActionResult> Index()
         {
             ViewData["Title"] = "Candidates";
             var candidateEntities = await _candidatesRepository.GetCandidatesAsync(true);
             return View(_mapper.Map<IEnumerable<CandidateDto>>(candidateEntities));
         }
+        #endregion
 
         #region Add
         [HttpGet]
@@ -95,6 +99,37 @@ namespace bytegr.candidates.manager.web.Controllers
         #endregion
 
         #region File
+        [HttpPost]
+        public IActionResult UploadFile(IFormFile formFile) {
+            try {
+                if (formFile != null && formFile.ContentType.ToLower() == "application/pdf") {//todo doc, docx
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(formFile.FileName);
+                    var filePath = Path.Combine("wwwroot", "uploads", fileName);
+
+                    using var fileStream = new FileStream(filePath, FileMode.Create);
+                    formFile.CopyTo(fileStream);
+
+                    var fileDetails = new {
+                        FileName = fileName,
+                        FilePath = filePath,
+                        FileSize = formFile.Length
+                    };
+
+                    return Ok(fileDetails);
+
+                }
+                else {
+                    return BadRequest("Invalid file. Please upload a PDF file.");
+                }
+            }
+            catch (Exception ex) {
+                throw new FileLoadException(nameof(formFile));
+                //StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+            finally { }
+        }
+
+
         [HttpPost]
         public IActionResult File([FromForm] CandidateDto candidateDto) {
             return RedirectToAction("Add", "Candidate", candidateDto);
