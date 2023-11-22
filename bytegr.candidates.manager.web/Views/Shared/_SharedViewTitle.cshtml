@@ -1,0 +1,9 @@
+﻿@using Microsoft.AspNetCore.Http.Extensions
+@{
+    ViewData["Url"] = Context.Request.GetDisplayUrl();
+    bool isEditMode = ViewData["IsEditMode"] as bool? ?? false;
+}
+
+<h1 style="font-weight:bolder;font-size:62px">@ViewData["Title"]</h1>
+<p style="margin-left:0px;margin-top:-10px"><small><mark>@ViewData["Url"]</mark></small></p>
+<label>@isEditMode</label>

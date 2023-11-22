@@ -19,7 +19,9 @@ namespace bytegr.candidates.manager.data.DbSeeds
                         Degrees = new List<DegreeEntity> {
                             new DegreeEntity() { Name = "Bsc" },
                             new DegreeEntity() { Name = "Msc" }
-                        }
+                        },
+                        DateCreated = DateTime.Now
+                        
                     });
 
                 context.SaveChanges();

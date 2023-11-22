@@ -31,13 +31,6 @@ namespace bytegr.candidates.manager.data.Entities
 
         [Column(TypeName = "varbinary(MAX)")]
         public byte[] CvBlob { get; set; } = Array.Empty<byte>();
-
-        //public Candidate(string lastname, string firstname, string email)
-        //{
-        //    LastName = lastname;
-        //    FirstName = firstname;
-        //    Email = email;
-        //}
     }
 }
 

@@ -21,10 +21,11 @@ public class HomeController : Controller
         _candidatesRepository = candidatesRepository ?? throw new ArgumentNullException(nameof(candidatesRepository));
     }
 
-    public async Task<IActionResult> Index() {
-        var candidateEntities = await _candidatesRepository.GetCandidatesAsync(true);
-        //return View(_mapper.Map(candidateEntities, new List<CandidateDto>()));
-        return View(_mapper.Map<IEnumerable<CandidateDto>>(candidateEntities));
+
+    public IActionResult Index()
+    {
+        ViewData["Title"] = "Welcome";
+        return View();
     }
 
     public IActionResult Privacy()

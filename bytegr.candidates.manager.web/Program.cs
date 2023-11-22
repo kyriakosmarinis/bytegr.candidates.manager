@@ -42,18 +42,22 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-//using (var scope = app.Services.CreateScope()) {
-//    var services = scope.ServiceProvider;
-//    try {
-//        var context = services.GetRequiredService<AppDbContext>();
-//        context.Database.EnsureCreated();
-//        bytegr.candidates.manager.data.DbSeeds.AppDbSeeder.SeedData(context);
-//    }
-//    catch (Exception ex) {
-//        Console.WriteLine("An error occurred while obtaining the in memory database context.");
-//        Console.WriteLine(ex.Message);
-//    }
-//}
+//Seed
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<AppDbContext>();
+        context.Database.EnsureCreated();
+        bytegr.candidates.manager.data.DbSeeds.AppDbSeeder.SeedData(context);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("An error occurred while obtaining the in memory database context.");
+        Console.WriteLine(ex.Message);
+    }
+}
 
 app.Run();
 

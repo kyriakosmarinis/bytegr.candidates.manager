@@ -24,21 +24,31 @@ namespace bytegr.candidates.manager.web.Controllers
             _candidatesRepository = candidatesRepository ?? throw new ArgumentNullException(nameof(candidatesRepository));
         }
 
-        public IActionResult Index() {
-            return View();
+        public async Task<IActionResult> Index()
+        {
+            ViewData["Title"] = "Candidates";
+            var candidateEntities = await _candidatesRepository.GetCandidatesAsync(true);
+            return View(_mapper.Map<IEnumerable<CandidateDto>>(candidateEntities));
         }
 
         #region Add
         [HttpGet]
         public IActionResult Add() {
+            ViewData["Title"] = "Add candidate";
             return View(new CandidateDto { Id = _candidatesRepository.GetId() + 1 });
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add([FromForm] CandidateDto candidateDto) {
+        public async Task<IActionResult> Add(bool isEditMode, [FromForm] CandidateDto candidateDto) {
+            ViewData["Title"] = "Add candidate";
+            ViewData["IsEditMode"] = isEditMode;
+
             if (ModelState.IsValid) {
                 var degrees = await _candidatesRepository.GetCandidateDegreesAsync(candidateDto.Id);
                 candidateDto.Degrees = _mapper.Map(degrees, new List<DegreeDto>());
+
+                candidateDto = await GetCandidateCvFile(candidateDto);/////////
+
                 return View(candidateDto);
             }
             return View(new CandidateDto { Id = _candidatesRepository.GetId() + 1 });
@@ -48,12 +58,16 @@ namespace bytegr.candidates.manager.web.Controllers
         #region Edit
         [HttpGet]
         public async Task<IActionResult> Edit(int candidateId) {
+            ViewData["Title"] = "Edit candidate";
+            ViewData["IsEditMode"] = true;
+
             if (!await _candidatesRepository.ExistsCandidateAsync(candidateId))
-                return View(new CandidateDto());
+                //return View(new CandidateDto());
+                return RedirectToAction("Add");
 
             var entity = await _candidatesRepository.GetCandidateAsync(candidateId, true);
             var candidateDto = _mapper.Map(entity, new CandidateDto());
-            //candidateDto = await GetCandidateCvFile(candidateDto);
+            candidateDto = await GetCandidateCvFile(candidateDto);/////////
             return View(candidateDto);
         }
         #endregion
@@ -64,17 +78,19 @@ namespace bytegr.candidates.manager.web.Controllers
             if (await _candidatesRepository.ExistsCandidateAsync(candidateDto.Id)) {
                 //var entity = await _candidatesRepository.GetCandidateAsync(candidateDto.Id, true);
                 await _candidatesRepository.UpdateCandidateAsync(_mapper.Map<CandidateEntity>(candidateDto));//_mapper.Map(candidateDto, entity));
-                return RedirectToAction("index", "Home");
+                return RedirectToAction("index");
+                //return RedirectToAction("index", "Home");
             }
             await _candidatesRepository.InsertCandidateAsync(_mapper.Map(candidateDto, new CandidateEntity()));
-            return RedirectToAction("index", "Home");  
+            return RedirectToAction("index");
+            //return RedirectToAction("index", "Home");  
         }
         #endregion
 
         #region Delete
         public async Task<IActionResult> Delete(int candidateId) {
             await _candidatesRepository.RemoveCandidateAsync(candidateId);
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index");
         }
         #endregion
 

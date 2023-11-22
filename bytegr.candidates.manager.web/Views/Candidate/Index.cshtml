@@ -1,6 +1,59 @@
-﻿@model bytegr.candidates.manager.data.Dtos.CandidateDto
+﻿@model IEnumerable<bytegr.candidates.manager.data.Dtos.CandidateDto>
 @using Microsoft.AspNetCore.Http.Extensions
+@Html.Partial("_SharedViewTitle")
+@*<h1 style="font-weight:bolder;font-size:68px">Candidates</h1>
+<p style="margin-top:0px; margin-left:10px;margin-bottom:20px;font-size:x-small">@Context.Request.GetDisplayUrl()</p>*@
 
+<a asp-controller="Candidate" asp-action="Add" class="btn btn-success btn-sm">Add Candidate</a>
+<a asp-action="index" asp-controller="Home" class="btn btn-secondary btn-sm btn-block">Dismiss</a>
 
-<h1 style="font-weight:bolder;font-size:68px">Candidate</h1>
-<p style="margin-top:0px; margin-left:10px;margin-bottom:20px;font-size:x-small">@Context.Request.GetDisplayUrl()</p>
+<div class="row" style="margin-top:20px">
+    <div class="col-md-10 col-md-offset-2">
+        <table class="table">
+            <tr>
+                <th>Id</th>
+                <th>LastName</th>
+                <th>FirstName</th>
+                <th>Email</th>
+                <th>Mobile</th>
+                <th>Degrees</th>
+                <th>CV</th>
+                @*<th>File</th>*@
+                <th>Created</th>
+                <th></th>
+                <th></th>
+            </tr>
+            @foreach (var candidate in Model)
+            {
+                <tr>
+                    <td>@candidate.Id</td>
+                    <td>@candidate.LastName</td>
+                    <td>@candidate.FirstName</td>
+                    <td>@candidate.Email</td>
+                    <td>@candidate.Mobile</td>
+                    <td>
+                        @candidate.Degrees.Count
+                    </td>
+                    <td>
+                        @if (@candidate.CvBlob.Length > 0)
+                        {
+                            <span>Ok</span>
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </td>
+                    <td>@candidate.DateCreated.ToString("d")</td>
+                    <td>
+                        <a asp-controller="Candidate" asp-action="Edit" asp-route-candidateId="@candidate.Id" class="btn btn-warning btn-sm">Edit</a>
+                    </td>
+                    <td>
+                        <a asp-controller="Candidate" asp-action="Delete" asp-route-candidateId="@candidate.Id" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+

@@ -1,62 +1,8 @@
-﻿@model IEnumerable<bytegr.candidates.manager.data.Dtos.CandidateDto>
-@using Microsoft.AspNetCore.Http.Extensions
-@{
-    ViewData["Title"] = "Home Page";
-}
-<h1 style="font-weight:bolder;font-size:68px">Home</h1>
-<p style="margin-top:-15px; margin-left:1px;margin-bottom:40px;font-size:small">@Context.Request.GetDisplayUrl()</p>
-<div class="row" style="margin-top:20px">
-    <div class="col-md-10 col-md-offset-2">
-        <table class="table">
-            <tr>
-                <th>Id</th>
-                <th>LastName</th>
-                <th>FirstName</th>
-                <th>Email</th>
-                <th>Mobile</th>
-                <th>Degrees</th>
-                <th>CV</th>
-                @*<th>File</th>*@
-                @*<th>DateCreated</th>*@
-            </tr>
-            @foreach (var candidate in Model)
-            {
-                <tr>
-                    <td>@candidate.Id</td>
-                    <td>@candidate.LastName</td>
-                    <td>@candidate.FirstName</td>
-                    <td>@candidate.Email</td>
-                    <td>@candidate.Mobile</td>
-                    <td>
-                        <select name="degrees">
-                            <option value="">Select a degree</option>
-                            @foreach (var degree in candidate.Degrees)
-                            {
-                                <option>@degree.Name</option>
-                            }
-                        </select>
-                    </td>
-                    <td>
-                        @if (@candidate.CvBlob.Length > 0)
-                        {
-                            <span>Ok</span>
-                        }
-                        else
-                        {
-                            <span>-</span>
-                        }
-                    </td>
-                    <td>
-                        <a asp-controller="Candidate" asp-action="Edit" asp-route-candidateId="@candidate.Id">Edit</a>
-                        <a asp-controller="Candidate" asp-action="Delete" asp-route-candidateId="@candidate.Id" style="margin-left:10px">Delete</a>
-                    </td>
-                </tr>
-            }
-        </table>
-        <a asp-controller="Candidate" asp-action="Add">Add New Candidate</a>
-        <a asp-controller="Degree" asp-action="Index" style="margin-left:30px">View All Degrees</a>
-    </div>
-</div>
+﻿@using Microsoft.AspNetCore.Http.Extensions
+@Html.Partial("_SharedViewTitle")
+
+<a asp-action="Index" asp-controller="Candidate" class="btn btn-success btn-sm">View Candidates</a>
+<a asp-action="Index" asp-controller="Degree" class="btn btn-success btn-sm">View Degrees</a>
 
 
 

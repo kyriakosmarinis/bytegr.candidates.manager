@@ -15,6 +15,7 @@
     <None Remove="Entities\Common\" />
     <None Remove="Common\" />
     <None Remove="Common\Extensions\" />
+    <None Remove="Dtos\Common\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Entities\" />
@@ -25,6 +26,7 @@
     <Folder Include="Entities\Common\" />
     <Folder Include="Common\" />
     <Folder Include="Common\Extensions\" />
+    <Folder Include="Dtos\Common\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />

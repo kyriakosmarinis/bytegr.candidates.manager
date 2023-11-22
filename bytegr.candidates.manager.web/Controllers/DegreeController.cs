@@ -22,13 +22,18 @@ namespace bytegr.candidates.manager.web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index() {
+        public async Task<IActionResult> Index(bool isEditMode) {
+            ViewData["Title"] = "Degrees";
+            ViewData["IsEditMode"] = isEditMode;
             var degreesEntities = await _candidatesRepository.GetDegreesAsync();
             return View(_mapper.Map<IEnumerable<DegreeDto>>(degreesEntities));
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(string? degreeName, [FromForm] CandidateDto candidateDto) {
+        public async Task<IActionResult> Add(string? degreeName, bool isEditMode, bool isInsertMode, [FromForm] CandidateDto candidateDto) {
+            ViewData["Title"] = "Add degrees";
+            ViewData["IsEditMode"] = isEditMode;
+
             if (ModelState.IsValid) {
                 if (!string.IsNullOrEmpty(degreeName)) {
                     var degreeDto = new DegreeDto { Name = degreeName, CandidateId = candidateDto.Id };
@@ -46,16 +51,40 @@ namespace bytegr.candidates.manager.web.Controllers
             return View();
         }
 
-        //[HttpDelete]
-        public async Task<IActionResult> Delete(int degreeId, [FromForm] CandidateDto candidateDto) {
+        #region Delete
+        //todo::fix bug - better implementation
+        public async Task<IActionResult> Delete(int degreeId, bool isEditMode, bool isCandidate, [FromForm] CandidateDto candidateDto) {
+            ViewData["Title"] = "Add degrees";
+            ViewData["IsEditMode"] = isEditMode;
+
             if (ModelState.IsValid) {
                 await _candidatesRepository.RemoveDegreeAsync(degreeId);
-                var candidateEntity = await _candidatesRepository.GetCandidateAsync(candidateDto.Id, true);
-                var updatedCandidate = _mapper.Map(candidateEntity, candidateDto);
-                return View(updatedCandidate);
+
+                if (isCandidate) {
+                    var candidateEntity = await _candidatesRepository.GetCandidateAsync(candidateDto.Id, true);
+                    var updatedCandidate = _mapper.Map(candidateEntity, candidateDto);
+
+                    return RedirectToAction("Add", isEditMode);
+                }
+                else {
+                    return RedirectToAction("Index");
+                }
             }
             return View();
         }
+
+        //todo::fix bug - better implementation
+        [HttpGet]
+        public async Task<IActionResult> Add(bool isEditMode, int candidateId = 1) {
+            ViewData["Title"] = "Degrees";
+            ViewData["IsEditMode"] = isEditMode;
+            var candidateEntity = await _candidatesRepository.GetCandidateAsync(candidateId, true);
+
+            return View(_mapper.Map(candidateEntity, new CandidateDto()));
+            //var degreesEntities = await _candidatesRepository.GetDegreesAsync();
+            //return View(_mapper.Map<IEnumerable<DegreeDto>>(degreesEntities));
+        }
+        #endregion
     }
 }
 

@@ -1,11 +1,7 @@
-﻿@{
-    ViewData["Title"] = "Degrees";
-}
-@model IEnumerable<bytegr.candidates.manager.data.Dtos.DegreeDto>
-@using Microsoft.AspNetCore.Http.Extensions
+﻿@model IEnumerable<bytegr.candidates.manager.data.Dtos.DegreeDto>
+@Html.Partial("_SharedViewTitle")
 
-<h1 style="font-weight:bolder;font-size:68px">Degree</h1>
-<p style="scroll-margin-inline-start;margin-top:0px; margin-left:10px;margin-bottom:20px;font-size:x-small">@Context.Request.GetDisplayUrl()</p>
+<a asp-action="index" asp-controller="Home" class="btn btn-secondary btn-sm btn-block">Dismiss</a>
 
 <div class="row" style="margin-top:20px">
     <div class="col-md-10 col-md-offset-2">
@@ -14,6 +10,7 @@
                 <th>Id</th>
                 <th>Name</th>
                 <th>CandidateId</th>
+                <th></th>
             </tr>
             @foreach (var degree in Model)
             {
@@ -21,11 +18,11 @@
                     <td>@degree.Id</td>
                     <td>@degree.Name</td>
                     <td>@degree.CandidateId</td>
-                    @*<td>
+                    <td>
                         <a asp-controller="Degree"
                            asp-action="Delete"
-                           asp-route-degreeId="@degree.Id">Delete</a>
-                    </td>*@
+                           asp-route-degreeId="@degree.Id" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
                 </tr>
             }
         </table>
