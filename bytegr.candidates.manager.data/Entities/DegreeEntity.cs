@@ -13,7 +13,7 @@ namespace bytegr.candidates.manager.data.Entities
 
         [Required]
         [MaxLength(50)]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [ForeignKey("CandidateId")]
         public CandidateEntity? Candidate { get; set; }

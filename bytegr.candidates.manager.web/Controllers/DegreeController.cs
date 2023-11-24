@@ -31,32 +31,7 @@ namespace bytegr.candidates.manager.web.Controllers
         }
         #endregion
 
-        #region Add
-        [HttpPost]
-        public async Task<IActionResult> Add(string? degreeName, bool isEditMode, bool isInsertMode, [FromForm] CandidateDto candidateDto) {
-            ViewData["Title"] = "Add degrees";
-            ViewData["IsEditMode"] = isEditMode;
-
-            if (ModelState.IsValid) {
-                if (!string.IsNullOrEmpty(degreeName)) {
-                    var degreeDto = new DegreeDto { Name = degreeName, CandidateId = candidateDto.Id };
-                    //HttpContext.Session.AddToSessionList($"{degreeName}", degreeDto);
-                    //await _candidatesRepository.InsertDegreeAsync(_mapper.Map(degreeDto, new DegreeEntity()));
-                    await _candidatesRepository.InsertCandidateDegreeAsync(_mapper.Map(degreeDto, new DegreeEntity()));
-                }
-                var degrees = await _candidatesRepository.GetCandidateDegreesAsync(candidateDto.Id);
-                candidateDto.Degrees = _mapper.Map(degrees, new List<DegreeDto>());
-                //var canditateEntity = await _candidatesRepository.GetCandidateAsync(candidateDto.Id, true);
-                //var dto = candidateDto.Id > 0 ? _mapper.Map(canditateEntity, new CandidateDto()) : _mapper.Map<CandidateDto>(canditateEntity);
-
-                return View(candidateDto);
-            }
-            return View();
-        }
-        #endregion
-
         #region Delete
-        //todo::fix bug - better implementation
         public async Task<IActionResult> Delete(int degreeId, bool isEditMode, bool isCandidate, [FromForm] CandidateDto candidateDto) {
             ViewData["Title"] = "Add degrees";
             ViewData["IsEditMode"] = isEditMode;
@@ -71,22 +46,10 @@ namespace bytegr.candidates.manager.web.Controllers
                     return RedirectToAction("Add", isEditMode);
                 }
                 else {
-                    return RedirectToAction("Index");
+                    return RedirectToAction(nameof(Index));
                 }
             }
             return View();
-        }
-
-        //todo::fix bug - better implementation
-        [HttpGet]
-        public async Task<IActionResult> Add(bool isEditMode, int candidateId = 1) {
-            ViewData["Title"] = "Degrees";
-            ViewData["IsEditMode"] = isEditMode;
-            var candidateEntity = await _candidatesRepository.GetCandidateAsync(candidateId, true);
-
-            return View(_mapper.Map(candidateEntity, new CandidateDto()));
-            //var degreesEntities = await _candidatesRepository.GetDegreesAsync();
-            //return View(_mapper.Map<IEnumerable<DegreeDto>>(degreesEntities));
         }
         #endregion
     }

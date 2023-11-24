@@ -128,12 +128,6 @@ namespace bytegr.candidates.manager.data.Repositories
         {
             if (await ExistsCandidateAsync(candidateId)) {
                 var candidate = await GetCandidateAsync(candidateId);
-
-                //if (await CandidateHasAnyDegreeAsync(candidateId)) {
-                //    var degrees = GetCandidateDegreesAsync(candidateId);
-                //    _context.Degrees.RemoveRange(degrees);
-                //}
-
                 if (candidate != null) _context.Candidates.Remove(candidate);
                 await SaveDbContextChangesAsync();
             }
@@ -150,6 +144,14 @@ namespace bytegr.candidates.manager.data.Repositories
             }
             else throw new NotImplementedException();
         }
+
+        //degree
+        public async Task<bool> RemoveDegreesAsync(int candidateId) {
+            var degrees = await GetCandidateDegreesAsync(candidateId);
+            _context.Degrees.RemoveRange(degrees);
+            return await SaveDbContextChangesAsync();
+        }
+
         #endregion
 
         #region Common

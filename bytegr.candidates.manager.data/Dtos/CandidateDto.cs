@@ -18,8 +18,6 @@ namespace bytegr.candidates.manager.data.Dtos
 
         public byte[] CvBlob { get; set; } = Array.Empty<byte>();
         public IFormFile CvFile { get; set; } = new FormFile(Stream.Null, 0, 0, "file", "file");
-
-        //public DateTime DateCreated { get; set; }
     }
 }
 

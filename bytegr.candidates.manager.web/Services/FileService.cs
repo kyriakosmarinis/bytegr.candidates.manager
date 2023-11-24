@@ -5,7 +5,7 @@ namespace bytegr.candidates.manager.web.Services
 {
 	public static class FileService
 	{
-        private static async Task<byte[]> ToByteArrayAsync(this IFormFile file, ModelStateDictionary modelState, long maxSize = 2097152) {
+        public static async Task<byte[]> ToByteArrayAsync(this IFormFile file, ModelStateDictionary modelState, long maxSize = 2097152) {
             using var memoryStream = new MemoryStream();
             await file.CopyToAsync(memoryStream);
 

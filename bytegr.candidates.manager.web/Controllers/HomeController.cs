@@ -21,7 +21,6 @@ public class HomeController : Controller
         _candidatesRepository = candidatesRepository ?? throw new ArgumentNullException(nameof(candidatesRepository));
     }
 
-
     public IActionResult Index()
     {
         ViewData["Title"] = "Welcome";

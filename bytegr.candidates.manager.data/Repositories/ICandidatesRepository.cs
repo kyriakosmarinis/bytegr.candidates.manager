@@ -15,6 +15,7 @@ namespace bytegr.candidates.manager.data.Repositories
         Task InsertDegreeAsync(DegreeEntity degree);//todo not use - delete
         Task UpdateDegreeAsync(DegreeEntity degree);//todo not use - delete
         Task<bool> RemoveDegreeAsync(int degreeId);//todo not use - delete
+        Task<bool> RemoveDegreesAsync(int candidateId);
 
         //collections
         Task<CandidateEntity?> GetCandidateAsync(int candidateId, bool includeDegrees);

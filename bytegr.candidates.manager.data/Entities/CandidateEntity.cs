@@ -13,16 +13,16 @@ namespace bytegr.candidates.manager.data.Entities
 
         [Required]
         [MaxLength(50)]
-        public string LastName { get; set; }
+        public string LastName { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(50)]
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = string.Empty;
 
         [Required]
         [EmailAddress]
         [MaxLength(200)]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [MaxLength(10)]
         public string Mobile { get; set; } = string.Empty;

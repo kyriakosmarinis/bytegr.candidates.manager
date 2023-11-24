@@ -2,18 +2,19 @@
 @Html.Partial("_SharedViewTitle")
 
 <button type="submit"
-        asp-action="Insert"
+        id="submit-form-btn"
+        asp-action="Insert" 
         asp-controller="Candidate"
-        asp-route-candidateDto="@Model" form="form" class="btn btn-primary btn-sm">
+        asp-route-isEditMode="@ViewData["IsEditMode"]"
+        asp-route-candidateDto="@Model"
+        form="form" class="btn btn-primary btn-sm">
     Submit
 </button>
 
-<a asp-action="index"
-   asp-controller="Candidate" class="btn btn-secondary btn-sm">Dismiss</a>
+<a asp-action="index" asp-controller="Candidate" class="btn btn-secondary btn-sm">Dismiss</a>
 
 <!-- Form -->
 <form method="post" id="form" asp-action="Add" asp-controller="Candidate" asp-route-candidateDto="@Model" enctype="multipart/form-data" style="margin-top:20px">
-    <!-- #region mandatory fields -->
     <!-- Id -->
     <div class="row form-group" style="padding:3px">
         <div class="col-md-2">
@@ -30,7 +31,7 @@
             <label asp-for="LastName" style="font-size:larger;font-weight: bolder"></label>
         </div>
         <div class="col-md-4">
-            <input id="last-name-input" type="text" asp-for="LastName" class="form-control" placeholder="Last Name" required />
+            <input id="input-last-name" type="text" asp-for="LastName" oninput="checkForm()" class="form-control" placeholder="Last Name" required />
         </div>
         <div class="col-md-4">
             <span asp-validation-for="LastName" class="text-danger"></span>
@@ -43,20 +44,20 @@
             <label asp-for="FirstName" style="font-size:larger;font-weight:bolder"></label>
         </div>
         <div class="col-md-4">
-            <input id="first-name-is-valid" type="text" asp-for="FirstName" class="form-control" placeholder="First Name" required />
+            <input id="input-first-name" type="text" asp-for="FirstName" oninput="checkForm()" class="form-control" placeholder="First Name" required />
         </div>
         <div class="col-md-4">
             <span asp-validation-for="FirstName" class="text-danger"></span>
         </div>
     </div>
-    <!-- #endregion mandatory fields -->
+
     <!-- Email -->
     <div class="row form-group" style="padding:3px">
         <div class="col-md-2">
             <label asp-for="Email" style="font-size:larger;font-weight:bolder"></label>
         </div>
         <div class="col-md-4">
-            <input id="email-is-valid" type="email" asp-for="Email" class="form-control" placeholder="Email Name" required />
+            <input id="input-email" type="email" asp-for="Email" oninput="checkForm()" class="form-control" placeholder="Email Name" required />
         </div>
         <div class="col-md-4">
             <span asp-validation-for="Email" class="text-danger"></span>
@@ -69,7 +70,7 @@
             <label asp-for="Mobile" style="font-size:larger;font-weight: bolder"></label>
         </div>
         <div class="col-md-4">
-            <input id="tel-mobile" type="tel" asp-for="Mobile" class="form-control" placeholder="Mobile" />
+            <input id="tel-mobile" type="tel" asp-for="Mobile" oninput="checkForm()" pattern="[0-9]{10}" class="form-control" placeholder="Mobile" />
         </div>
         <div class="col-md-4">
             <span asp-validation-for="Mobile" class="text-danger"></span>
@@ -86,17 +87,27 @@
                 @*<option selected>Choose...</option>*@
                 @foreach (var degree in Model.Degrees)
                 {
-                    <option value="@degree.Id">@degree.Name</option>
+                    <option value="@degree.Name">@degree.Name</option>
+                    @*<option value="@degree.Id">@degree.Name</option>*@
+
                 }
             </select>
-            <button type="submit"
-                    asp-action="Add"
-                    asp-controller="Degree"
-                    asp-route-candidate-degreeName=""
-                    asp-route-candidateDto="@Model"
-                    asp-route-isEditMode="@ViewData["IsEditMode"]" class="btn btn-outline-primary btn-sm">
-                Edit
-            </button>
+
+            <button type="button" onclick="addNewDegree()" class="btn btn-outline-primary btn-sm">Add</button>
+            <button type="button" onclick="removeDegree()" class="btn btn-outline-danger btn-sm">Remove</button>
+            <input type="text" id="selectedOptions" name="selectedOptions" hidden/>
+
+            @*@if (ViewData["IsEditMode"] as bool? ?? false)
+            {
+                <button type="submit"
+                        asp-action="Add"
+                        asp-controller="Degree"
+                        asp-route-candidate-degreeName=""
+                        asp-route-candidateDto="@Model"
+                        asp-route-isEditMode="@ViewData["IsEditMode"]" class="btn btn-outline-primary btn-sm">
+                    Edit
+                </button>
+            }*@
         </div>
     </div>
 
@@ -106,15 +117,31 @@
             <label asp-for="CvFile" style="font-weight:bolder;font-size:larger"></label>
         </div>
         <div class="col-md-4">
-            <input id="file-cv-upload" type="file" asp-for="CvFile" name="formFile" accept=".pdf, .doc, .docx" class="form-control" style="margin-bottom:5px">
+
+            <input id="file-cv-upload" @(Convert.ToBoolean(ViewData["IsEditMode"]) ? "" : "disabled")
+                   type="file"
+                   asp-for="CvFile"
+                   name="formFile"
+                   onchange="convertCvFIle()" accept=".pdf, .doc, .docx" class="form-control" style="margin-bottom:5px">
+
             <button type="submit"
+                    id="convert-cv-file"
                     asp-action="UploadFile"
                     asp-controller="Candidate"
-                    class="btn btn-outline-primary btn-sm">
+                    asp-route-isEditMode="@ViewData["IsEditMode"]"
+                    style="display: none" class="btn btn-outline-primary btn-sm">
                 Upload
             </button>
         </div>
         <div class="col-md-4">
+            @if (Model.CvFile.Length > 0)
+                {
+                    <label asp-for="CvFile" style="font-weight:lighter;font-size:larger;margin-top:5px">Cv OK</label>
+                }
+                else
+                {
+                    <label asp-for="CvFile" style="font-weight:lighter;font-size:larger;margin-top:5px">Cv None</label>
+                }
             <span asp-validation-for="CvFile" class="text-danger"></span>
         </div>
     </div>
@@ -130,5 +157,59 @@
         <div class="col-md-4">
         </div>
     </div>
+
+
+
+
+    <script>
+        function checkForm() {
+            var submitButton = document.getElementById('submit-form-btn');
+            var submitCvFile = document.getElementById('file-cv-upload');
+
+            var firstNameValue = document.getElementById('input-first-name').value;
+            var lastNameValue = document.getElementById('input-last-name').value;
+            var emailValue = document.getElementById('input-email').value;
+            var mobileValue = document.getElementById('tel-mobile').value;
+
+            if (firstNameValue.trim() !== '' && lastNameValue.trim() !== '' && emailValue.trim() !== '' && mobileValue.trim() !== '' && mobileValue.length === 10) {
+                submitButton.disabled = false;
+                submitCvFile.disabled = false;
+            } else {
+                submitButton.disabled = true;
+                submitCvFile.disabled = true;
+            }
+        }
+        function addNewDegree() {
+            var modelList = document.getElementById('selector-cv');
+            var newModelName = prompt('Enter name of degree:');
+
+            if (newModelName) {
+                var newOption = document.createElement('option');
+                newOption.value = newModelName.toLowerCase().replace(/\s/g, '');
+                newOption.text = newModelName;
+                modelList.add(newOption);
+                modelList.value = newOption.value;
+                updateSelectedDegrees();
+            }
+        }
+        function removeDegree() {
+            var selectElement = document.getElementById('selector-cv');
+
+            // Check if an option is selected
+            if (selectElement.selectedIndex !== -1) {
+                // Remove the selected option
+                selectElement.remove(selectElement.selectedIndex);
+                updateSelectedDegrees();
+            }
+        }
+        function updateSelectedDegrees() {
+            var modelList = document.getElementById('selector-cv');
+            var selectedOptions = Array.from(modelList.options).map(option => option.value);
+
+            document.getElementById('selectedOptions').value = JSON.stringify(selectedOptions);
+        }
+        function convertCvFIle() {
+            document.getElementById('convert-cv-file').click();
+        }</script>
 
 </form>

@@ -18,6 +18,8 @@ namespace bytegr.candidates.manager.web.Controllers
     {
         private readonly IMapper _mapper;
         private readonly ICandidatesRepository _candidatesRepository;
+        private static byte[]? tempCvBlob;
+        private static CandidateDto underCreateCandidateDto = new();
 
         #region ctor
         public CandidateController(IMapper mapper, ICandidatesRepository candidatesRepository) {
@@ -37,24 +39,9 @@ namespace bytegr.candidates.manager.web.Controllers
 
         #region Add
         [HttpGet]
-        public IActionResult Add() {
+        public IActionResult Add(bool isUnderCreate = false) {
             ViewData["Title"] = "Add candidate";
-            return View(new CandidateDto { Id = _candidatesRepository.GetId() + 1 });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Add(bool isEditMode, [FromForm] CandidateDto candidateDto) {
-            ViewData["Title"] = "Add candidate";
-            ViewData["IsEditMode"] = isEditMode;
-
-            if (ModelState.IsValid) {
-                var degrees = await _candidatesRepository.GetCandidateDegreesAsync(candidateDto.Id);
-                candidateDto.Degrees = _mapper.Map(degrees, new List<DegreeDto>());
-
-                candidateDto = await GetCandidateCvFile(candidateDto);/////////
-
-                return View(candidateDto);
-            }
+            if (isUnderCreate) return View(underCreateCandidateDto);
             return View(new CandidateDto { Id = _candidatesRepository.GetId() + 1 });
         }
         #endregion
@@ -65,78 +52,90 @@ namespace bytegr.candidates.manager.web.Controllers
             ViewData["Title"] = "Edit candidate";
             ViewData["IsEditMode"] = true;
 
-            if (!await _candidatesRepository.ExistsCandidateAsync(candidateId))
-                //return View(new CandidateDto());
-                return RedirectToAction("Add");
-
             var entity = await _candidatesRepository.GetCandidateAsync(candidateId, true);
             var candidateDto = _mapper.Map(entity, new CandidateDto());
-            candidateDto = await GetCandidateCvFile(candidateDto);/////////
+            candidateDto = await GetCandidateCvFile(candidateDto);
+
             return View(candidateDto);
         }
         #endregion
         
         #region Insert
         [HttpPost]
-        public async Task<IActionResult> Insert([FromForm] CandidateDto candidateDto) {
-            if (await _candidatesRepository.ExistsCandidateAsync(candidateDto.Id)) {
-                //var entity = await _candidatesRepository.GetCandidateAsync(candidateDto.Id, true);
-                await _candidatesRepository.UpdateCandidateAsync(_mapper.Map<CandidateEntity>(candidateDto));//_mapper.Map(candidateDto, entity));
-                return RedirectToAction("index");
-                //return RedirectToAction("index", "Home");
-            }
-            await _candidatesRepository.InsertCandidateAsync(_mapper.Map(candidateDto, new CandidateEntity()));
-            return RedirectToAction("index");
-            //return RedirectToAction("index", "Home");  
-        }
-        #endregion
+        public async Task<IActionResult> Insert(bool isEditMode, string selectedOptions, [FromForm] CandidateDto candidateDto) {
+            if (!string.IsNullOrEmpty(selectedOptions)) {
+                var options = JsonConvert.DeserializeObject<List<string>>(selectedOptions);
 
-        #region Delete
-        public async Task<IActionResult> Delete(int candidateId) {
-            await _candidatesRepository.RemoveCandidateAsync(candidateId);
-            return RedirectToAction("Index");
+                if (isEditMode) {
+                    await _candidatesRepository.RemoveDegreesAsync(candidateDto.Id);
+                }
+                if (options != null) {
+                    foreach (var item in options) {
+                        var degreeDto = new DegreeDto { Name = item, CandidateId = candidateDto.Id };
+                        await _candidatesRepository.InsertCandidateDegreeAsync(_mapper.Map(degreeDto, new DegreeEntity()));
+                    }
+                }
+            }
+            candidateDto = await GetCandidateCvFile(candidateDto);
+
+            if (await _candidatesRepository.ExistsCandidateAsync(candidateDto.Id)) {
+                await _candidatesRepository.UpdateCandidateAsync(_mapper.Map<CandidateEntity>(candidateDto));//_mapper.Map(candidateDto, entity));
+                return RedirectToAction(nameof(Index));
+            }
+
+            if(underCreateCandidateDto.Id == 0) await _candidatesRepository.InsertCandidateAsync(_mapper.Map(candidateDto, new CandidateEntity()));
+            else await _candidatesRepository.InsertCandidateAsync(_mapper.Map(underCreateCandidateDto, new CandidateEntity()));
+            return RedirectToAction(nameof(Index));
         }
         #endregion
 
         #region File
         [HttpPost]
-        public IActionResult UploadFile(IFormFile formFile) {
-            try {
-                if (formFile != null && formFile.ContentType.ToLower() == "application/pdf") {//todo doc, docx
-                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(formFile.FileName);
-                    var filePath = Path.Combine("wwwroot", "uploads", fileName);
+        public async Task<IActionResult> UploadFile(bool isEditMode, string selectedOptions, IFormFile formFile, [FromForm] CandidateDto candidateDto)
+        {
+            ViewData["Id"] = candidateDto.Id;
+            ViewData["IsEditMode"] = isEditMode;
 
-                    using var fileStream = new FileStream(filePath, FileMode.Create);
-                    formFile.CopyTo(fileStream);
+            if (formFile != null && formFile.ContentType.ToLower() == "application/pdf") {//todo doc, docx
+                candidateDto.CvBlob = await formFile.ToByteArrayAsync(ModelState);
+                candidateDto.CvFile = formFile;
 
-                    var fileDetails = new {
-                        FileName = fileName,
-                        FilePath = filePath,
-                        FileSize = formFile.Length
-                    };
+                if (isEditMode) {//todo better implementation - repeated code
+                    ViewData["Title"] = "Edit candidate";
 
-                    return Ok(fileDetails);
+                    if (!string.IsNullOrEmpty(selectedOptions))
+                    {
+                        await _candidatesRepository.RemoveDegreesAsync(candidateDto.Id);
+                        var options = JsonConvert.DeserializeObject<List<string>>(selectedOptions);
+
+                        if (options != null)
+                        {
+                            foreach (var item in options)
+                            {
+                                var degreeDto = new DegreeDto { Name = item, CandidateId = candidateDto.Id };
+                                await _candidatesRepository.InsertCandidateDegreeAsync(_mapper.Map(degreeDto, new DegreeEntity()));
+                            }
+                        }
+                    }
+                    await _candidatesRepository.UpdateCandidateAsync(_mapper.Map<CandidateEntity>(candidateDto));
+                    return RedirectToAction(nameof(Edit), new { candidateId = candidateDto.Id });
 
                 }
-                else {
-                    return BadRequest("Invalid file. Please upload a PDF file.");
+                underCreateCandidateDto = candidateDto;
+
+                if (!string.IsNullOrEmpty(selectedOptions)) {//todo better implementation - repeated code
+                    var options = JsonConvert.DeserializeObject<List<string>>(selectedOptions);
+
+                    if (options != null) {
+                        foreach (var item in options) {
+                            var degree = new DegreeDto { Name = item, CandidateId = candidateDto.Id };
+                            underCreateCandidateDto.Degrees.Add(degree);
+                        }
+                    }
                 }
+                return RedirectToAction(nameof(Add), new { isUnderCreate = true });
             }
-            catch (Exception ex) {
-                throw new FileLoadException(nameof(formFile));
-                //StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-            finally { }
-        }
-
-
-        [HttpPost]
-        public IActionResult File([FromForm] CandidateDto candidateDto) {
-            return RedirectToAction("Add", "Candidate", candidateDto);
-        }
-
-        public CandidateDto UpdateFile(string name, CandidateDto candidateDto) {
-            return candidateDto;
+            return BadRequest($"File error, pleasse retry");
         }
 
         private async Task<CandidateDto> GetCandidateCvFile(CandidateDto candidateDto)
@@ -159,6 +158,14 @@ namespace bytegr.candidates.manager.web.Controllers
                 candidateDto.CvFile = entity.CvBlob.ToIFormFile($"{candidateDto.LastName}", "application/pdf");//"text/plain"
             }
             return candidateDto;
+        }
+        #endregion
+
+        #region Delete
+        public async Task<IActionResult> Delete(int candidateId)
+        {
+            await _candidatesRepository.RemoveCandidateAsync(candidateId);
+            return RedirectToAction("Index");
         }
         #endregion
     }
