@@ -83,8 +83,13 @@ namespace bytegr.candidates.manager.web.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            if(underCreateCandidateDto.Id == 0) await _candidatesRepository.InsertCandidateAsync(_mapper.Map(candidateDto, new CandidateEntity()));
-            else await _candidatesRepository.InsertCandidateAsync(_mapper.Map(underCreateCandidateDto, new CandidateEntity()));
+            if (underCreateCandidateDto.Id == 0)
+                await _candidatesRepository.InsertCandidateAsync(_mapper.Map(candidateDto, new CandidateEntity()));
+            else
+            {
+                await _candidatesRepository.InsertCandidateAsync(_mapper.Map(underCreateCandidateDto, new CandidateEntity()));
+                underCreateCandidateDto = new();
+            }
             return RedirectToAction(nameof(Index));
         }
         #endregion
