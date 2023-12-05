@@ -13,11 +13,14 @@ namespace bytegr.candidates.manager.data.DbContexts
             : base(options) {
         }
 
-        public int GetId() {
+        public int GetCandidateId() {
             return Candidates.Max(i => (int?)i.Id) ?? 0;
         }
 
-
+        public int GetDegreeId()
+        {
+            return Degrees.Max(i => (int?)i.Id) ?? 0;
+        }
     }
 }
 

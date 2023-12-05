@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="Effort.EF6" Version="2.2.17" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\bytegr.candidates.manager.data\bytegr.candidates.manager.data.csproj">

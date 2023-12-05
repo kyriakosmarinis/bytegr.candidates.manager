@@ -42,7 +42,7 @@ namespace bytegr.candidates.manager.web.Controllers
         public IActionResult Add(bool isUnderCreate = false) {
             ViewData["Title"] = "Add candidate";
             if (isUnderCreate) return View(underCreateCandidateDto);
-            return View(new CandidateDto { Id = _candidatesRepository.GetId() + 1 });
+            return View(new CandidateDto { Id = _candidatesRepository.GetCandidateId() + 1 });
         }
         #endregion
 

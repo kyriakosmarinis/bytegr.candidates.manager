@@ -31,6 +31,13 @@ namespace bytegr.candidates.manager.web.Controllers
         }
         #endregion
 
+        #region Add
+        [HttpGet]
+        public IActionResult Add() {
+            return View(new DegreeDto { Id = _candidatesRepository.GetDegreeId() + 1 });
+        }
+        #endregion
+
         #region Delete
         public async Task<IActionResult> Delete(int degreeId, bool isEditMode, bool isCandidate, [FromForm] CandidateDto candidateDto) {
             ViewData["Title"] = "Add degrees";

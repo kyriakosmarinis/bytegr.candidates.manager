@@ -49,6 +49,10 @@ namespace bytegr.candidates.manager.data.Repositories
             return await _context.Degrees.Where(d => d.CandidateId == candidateId).ToListAsync();
         }
 
+        public int GetCandidateId() {
+            return _context.GetCandidateId();
+        }
+
         //degree
         public async Task<DegreeEntity?> GetDegreeAsync(int degreeId) {
             return await _context.Degrees.Where(d => d.Id == degreeId).FirstOrDefaultAsync();
@@ -58,8 +62,8 @@ namespace bytegr.candidates.manager.data.Repositories
             return await _context.Degrees.OrderBy(d => d.Id).ToListAsync();
         }
 
-        public int GetId() {
-            return _context.GetId();
+        public int GetDegreeId() {
+            return _context.GetDegreeId();
         }
         #endregion
 
@@ -97,6 +101,10 @@ namespace bytegr.candidates.manager.data.Repositories
         //degree
         public async Task<bool> ExistsDegreeAsync(int degreeId) {
             return await _context.Degrees.AnyAsync(d => d.Id == degreeId);
+        }
+
+        public async Task<bool> HasDegreeDuplicateAsync(string degreeName) {
+            return await _context.Degrees.AnyAsync(d => d.Name == degreeName);
         }
         #endregion
 

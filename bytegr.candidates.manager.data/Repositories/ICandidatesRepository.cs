@@ -16,6 +16,7 @@ namespace bytegr.candidates.manager.data.Repositories
         Task UpdateDegreeAsync(DegreeEntity degree);//todo not use - delete
         Task<bool> RemoveDegreeAsync(int degreeId);//todo not use - delete
         Task<bool> RemoveDegreesAsync(int candidateId);
+        int GetDegreeId();
 
         //collections
         Task<CandidateEntity?> GetCandidateAsync(int candidateId, bool includeDegrees);
@@ -23,7 +24,7 @@ namespace bytegr.candidates.manager.data.Repositories
         Task<DegreeEntity?> GetDegreeAsync(int degreeId);
         Task<IEnumerable<DegreeEntity>> GetDegreesAsync();
         Task<IEnumerable<DegreeEntity>> GetCandidateDegreesAsync(int candidateId);
-        int GetId();
+        int GetCandidateId();
 
         //exists
         Task<bool> ExistsCandidateAsync(int candidateId);
@@ -33,6 +34,7 @@ namespace bytegr.candidates.manager.data.Repositories
 
         //has
         Task<bool> HasCandidateCvChanged(int candidateId, byte[] bytes);
+        Task<bool> HasDegreeDuplicateAsync(string degreeName);
 
         //are
         Task<bool> AreCandidateEntitiesEqual(int candidateId, CandidateEntity newEntity);

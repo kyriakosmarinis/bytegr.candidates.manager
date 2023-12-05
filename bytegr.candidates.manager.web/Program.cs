@@ -1,5 +1,8 @@
-﻿using bytegr.candidates.manager.data.DbContexts;
+﻿using System;
+using bytegr.candidates.manager.data.DbContexts;
+using bytegr.candidates.manager.data.Entities;
 using bytegr.candidates.manager.data.Repositories;
+using Effort;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,19 +14,12 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("InMemoryDatabase"));
 builder.Services.AddSession(options => options.IdleTimeout = TimeSpan.FromMinutes(10));
 
-#region Sqlite InMemory
-/*builder.Services.AddDbContext<AppDbContext>(options =>
-{
-    var liteConn = new SqliteConnection("DataSource=:memory:");
-    liteConn.Open();
-    options
-        .UseSqlite(liteConn)
-        .ConfigureWarnings(warnings =>
-        {
-            warnings.Throw(RelationalEventId.QueryClientEvaluationWarning);
-            warnings.Log(RelationalEventId.ExecutedCommand);
-        });
-});*/
+#region Effort InMemory
+//using (var ctx = new AppDbContextEffort(DbConnectionFactory.CreateTransient()))
+//{
+//    ctx.Candidates.Add(new CandidateEntity() { Id = 1, FirstName = "Kyriakos" });
+//    ctx.SaveChanges();
+//}
 #endregion
 
 var app = builder.Build();

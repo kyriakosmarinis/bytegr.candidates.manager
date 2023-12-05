@@ -1,0 +1,15 @@
+﻿@model bytegr.candidates.manager.data.Dtos.DegreeDto
+@Html.Partial("_SharedViewTitle")
+
+<form method="post" id="form" asp-action="Add" asp-controller="Degree" asp-route-degreeDto="@Model" enctype="multipart/form-data" style="margin-top:20px">
+    <!-- Id -->
+    <div class="row form-group" style="padding:3px">
+        <div class="col-md-2">
+            <label asp-for="Id" style="font-size:larger;font-weight:bolder"></label>
+        </div>
+        <div class="col-md-4">
+            <input asp-for="Id" type="number" class="form-control" readonly />
+        </div>
+    </div>
+
+</form>
