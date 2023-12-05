@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Common;
 using bytegr.candidates.manager.data.Entities;
 using Microsoft.EntityFrameworkCore;
 

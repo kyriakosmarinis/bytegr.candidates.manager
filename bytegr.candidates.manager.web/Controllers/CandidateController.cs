@@ -140,7 +140,20 @@ namespace bytegr.candidates.manager.web.Controllers
                 }
                 return RedirectToAction(nameof(Add), new { isUnderCreate = true });
             }
-            return BadRequest($"File error, pleasse retry");
+            return BadRequest($"File error, please retry");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> File([FromForm] CandidateDto candidateDto) {
+            ViewData["Title"] = "download cv";
+
+            candidateDto = await GetCandidateCvFile(candidateDto);
+
+            if (candidateDto.CvFile.Length > 0) {
+                
+                return File(candidateDto.CvFile.OpenReadStream(), candidateDto.CvFile.ContentType, candidateDto.CvFile.FileName);
+            }
+            return BadRequest($"File download error, please retry");
         }
 
         private async Task<CandidateDto> GetCandidateCvFile(CandidateDto candidateDto)

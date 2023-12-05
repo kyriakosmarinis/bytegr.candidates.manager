@@ -41,7 +41,7 @@ namespace bytegr.candidates.manager.data.Repositories
         }
 
         public async Task<IEnumerable<CandidateEntity>> GetCandidatesAsync(bool includeDegrees = true) {
-            if (includeDegrees) return await _context.Candidates.OrderBy(c => c.Id).Include(d => d.Degrees).ToListAsync();
+            if (includeDegrees) return await _context.Candidates.ToListAsync();//OrderBy(c => c.Id).Include(d => d.Degrees).ToListAsync();
             else return await _context.Candidates.OrderBy(c => c.Id).ToListAsync();
         }
 

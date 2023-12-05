@@ -135,13 +135,16 @@
         </div>
         <div class="col-md-4">
             @if (Model.CvFile.Length > 0)
-                {
-                    <label asp-for="CvFile" style="font-weight:lighter;font-size:larger;margin-top:5px">Cv OK</label>
-                }
-                else
-                {
-                    <label asp-for="CvFile" style="font-weight:lighter;font-size:larger;margin-top:5px">Cv None</label>
-                }
+            {
+                <label asp-for="CvFile" style="font-weight:lighter;font-size:larger;margin-top:5px">Cv OK</label>
+
+                <button type="submit" asp-action="File" asp-controller="Candidate" asp-route-candidateDto="@Model" class="btn btn-secondary btn-sm">dwnld</button>
+
+            }
+            else
+            {
+                <label asp-for="CvFile" style="font-weight:lighter;font-size:larger;margin-top:5px">Cv None</label>
+            }
             <span asp-validation-for="CvFile" class="text-danger"></span>
         </div>
     </div>
